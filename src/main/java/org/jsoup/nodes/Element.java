@@ -29,8 +29,6 @@ public class Element extends Node {
     public boolean onlyStartTag;
 
 
-
-
     /**
      * Create a new, standalone Element. (Standalone in that is has no parent.)
      *

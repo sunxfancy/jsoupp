@@ -33,6 +33,10 @@ public class StartComment extends Node {
     public String toString() {
         return outerHtml();
     }
-
+    
+    @Override
+    public String nodeType() {
+        return "StartComment";
+    }
 
 }

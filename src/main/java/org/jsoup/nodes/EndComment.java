@@ -30,4 +30,9 @@ public class EndComment extends Node {
         return outerHtml();
     }
 
+    @Override
+    public String nodeType() {
+        return "EndComment";
+    }
+
 }
