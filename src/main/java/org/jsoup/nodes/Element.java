@@ -28,6 +28,61 @@ public class Element extends Node {
     public boolean onlyEndTag;
     public boolean onlyStartTag;
 
+    // zhijia added
+    @Override
+	public String nodeType() {
+		return "Element";
+	}
+
+    void outerHtmlHead(StringBuilder accum, int depth, Document.OutputSettings out) {
+        if (accum.length() > 0 && out.prettyPrint() && (tag.formatAsBlock() || (parent() != null && parent().tag().formatAsBlock()) || out.outline()) )
+            indent(accum, depth, out);
+        accum
+                .append("<")
+                .append(tagName());
+        attributes.html(accum, out);
+
+        ///////////////////////////////////
+        // zhijia added
+        if(this.onlyStartTag == true)
+           accum.append(" START");
+        if(this.onlyEndTag == true)
+           accum.append(" END");
+        /////////////////////////////////////////
+
+
+        // selfclosing includes unknown tags, isEmpty defines tags that are always empty
+        if (childNodes.isEmpty() && tag.isSelfClosing()) {
+            if (out.syntax() == Document.OutputSettings.Syntax.html && tag.isEmpty())
+                accum.append('>');
+            else
+                accum.append(" />"); // <img> in html, <img /> in xml
+        }
+        else
+            accum.append(">");
+    }
+
+    void outerHtmlTail(StringBuilder accum, int depth, Document.OutputSettings out) {
+        if (!(childNodes.isEmpty() && tag.isSelfClosing())) {
+            if (out.prettyPrint() && (!childNodes.isEmpty() && (
+                    tag.formatAsBlock() || (out.outline() && (childNodes.size()>1 || (childNodes.size()==1 && !(childNodes.get(0) instanceof TextNode))))
+            )))
+                indent(accum, depth, out);
+            accum.append("</").append(tagName());
+
+            ///////////////////////////////////
+            // zhijia added
+            if(this.onlyStartTag == true)
+               accum.append(" START");
+            if(this.onlyEndTag == true)
+               accum.append(" END");
+            /////////////////////////////////////////
+
+
+            accum.append(">");
+        }
+    }
+
 
     /**
      * Create a new, standalone Element. (Standalone in that is has no parent.)
@@ -1139,54 +1194,7 @@ public class Element extends Node {
         return this;
     }
 
-    void outerHtmlHead(StringBuilder accum, int depth, Document.OutputSettings out) {
-        if (accum.length() > 0 && out.prettyPrint() && (tag.formatAsBlock() || (parent() != null && parent().tag().formatAsBlock()) || out.outline()) )
-            indent(accum, depth, out);
-        accum
-                .append("<")
-                .append(tagName());
-        attributes.html(accum, out);
 
-        ///////////////////////////////////
-        // zhijia added
-        if(this.onlyStartTag == true)
-           accum.append(" START");
-        if(this.onlyEndTag == true)
-           accum.append(" END");
-        /////////////////////////////////////////
-
-
-        // selfclosing includes unknown tags, isEmpty defines tags that are always empty
-        if (childNodes.isEmpty() && tag.isSelfClosing()) {
-            if (out.syntax() == Document.OutputSettings.Syntax.html && tag.isEmpty())
-                accum.append('>');
-            else
-                accum.append(" />"); // <img> in html, <img /> in xml
-        }
-        else
-            accum.append(">");
-    }
-
-    void outerHtmlTail(StringBuilder accum, int depth, Document.OutputSettings out) {
-        if (!(childNodes.isEmpty() && tag.isSelfClosing())) {
-            if (out.prettyPrint() && (!childNodes.isEmpty() && (
-                    tag.formatAsBlock() || (out.outline() && (childNodes.size()>1 || (childNodes.size()==1 && !(childNodes.get(0) instanceof TextNode))))
-            )))
-                indent(accum, depth, out);
-            accum.append("</").append(tagName());
-
-            ///////////////////////////////////
-            // zhijia added
-            if(this.onlyStartTag == true)
-               accum.append(" START");
-            if(this.onlyEndTag == true)
-               accum.append(" END");
-            /////////////////////////////////////////
-
-
-            accum.append(">");
-        }
-    }
 
     /**
      * Retrieves the element's inner HTML. E.g. on a {@code <div>} with one empty {@code <p>}, would return

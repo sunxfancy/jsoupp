@@ -3,6 +3,10 @@ package org.sxf;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.hpar.*;
+import org.jsoup.*;
+import org.jsoup.nodes.*;
+import java.io.*;
 
 /**
  * Unit test for simple App.
@@ -33,6 +37,15 @@ public class AppTest
      */
     public void testApp()
     {
-        assertTrue( true );
+        String data = "";
+        try {
+            data = App.readFile("src/test/data/generated.html");
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        ParallelParser pp = new ParallelParser(data, 4);
+        Document d = pp.parse();
+        assertTrue(d != null);
     }
 }

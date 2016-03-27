@@ -1,4 +1,4 @@
-package org.sxf;
+package org.hpar;
 
 import org.jsoup.Jsoup;
 import org.jsoup.helper.DescendableLinkedList;
@@ -15,7 +15,7 @@ public class ParallelParser {
     String[] inputs;
     DescendableLinkedList<Element> stack; // open emlement stack
 
-    ParallelParser(String input, int numThreads) {
+    public ParallelParser(String input, int numThreads) {
         this.input = input;
         this.numThreads = numThreads;
         inputs = partition(input);
@@ -23,7 +23,7 @@ public class ParallelParser {
         docs = new Document[numThreads];
     }
 
-    Document parse() {
+    public Document parse() {
 
         Thread[] pparsers = new ParserThread[numThreads];
 

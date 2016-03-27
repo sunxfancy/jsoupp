@@ -7,6 +7,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 
 /**
  * HTML Tree Builder; creates a DOM from Tokens.
@@ -44,7 +45,26 @@ public class HtmlTreeBuilder extends TreeBuilder {
     private boolean fosterInserts = false; // if next inserts should be fostered
     private boolean fragmentParsing = false; // if parsing a fragment of html
 
-    HtmlTreeBuilder() {}
+    // zhijia add to store tag-insertionMode mapping for handling broken <table>
+    private HashMap<String, HtmlTreeBuilderState> stateMap = new HashMap<String, HtmlTreeBuilderState>();
+
+
+    HtmlTreeBuilder() {
+        // zhijia
+        init();
+    }
+
+    // zhijia add to build the tag-insertionMode mapping to predict insertion
+    // mode when <table> tag is broken
+    void init() {
+        stateMap.put("td", HtmlTreeBuilderState.InCell);
+        stateMap.put("tr", HtmlTreeBuilderState.InTableText);
+        stateMap.put("th", HtmlTreeBuilderState.InCell);
+        stateMap.put("thead", HtmlTreeBuilderState.InTableText);
+        stateMap.put("tbody", HtmlTreeBuilderState.InTableText);
+        stateMap.put("tfoot", HtmlTreeBuilderState.InTableText);
+        // stateMap.put("table", HtmlTreeBuilderState.InTableText);
+    }
 
     @Override
     Document parse(String input, String baseUri, ParseErrorList errors) {
@@ -178,7 +198,7 @@ public class HtmlTreeBuilder extends TreeBuilder {
             tokeniser.emit(emptyEnd.reset().name(el.tagName()));  // ensure we get out of whatever state we are in. emitted for yielded processing
             return el;
         }
-        
+
         Element el = new Element(Tag.valueOf(startTag.name()), baseUri, startTag.attributes);
         insert(el);
         return el;

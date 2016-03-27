@@ -18,10 +18,30 @@ final class CharacterReader {
     private int mark = 0;
     private final String[] stringCache = new String[512]; // holds reused strings in this doc, to lessen garbage
 
+    // zhijia added
+    private String inputString;
+
+    // zhijia added
+    String getSegment(int start, int end) {
+    	return inputString.substring(start, end);
+    }
+
+    // zhijia added
+    void setPos(int pos) {
+    	this.pos = pos;
+    }
+
+    // zhijia added
+    String subString(int start, int end) {
+    	return inputString.substring(start, end);
+    }
+
     CharacterReader(String input) {
         Validate.notNull(input);
         this.input = input.toCharArray();
         this.length = this.input.length;
+        // zhijia added
+        this.inputString = input;
     }
 
     int pos() {

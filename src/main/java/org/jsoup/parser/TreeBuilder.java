@@ -22,6 +22,10 @@ abstract class TreeBuilder {
     private Token.StartTag start = new Token.StartTag(); // start tag to process
     private Token.EndTag end  = new Token.EndTag();
 
+    // zhijia add input
+    protected String input;
+
+
     protected void initialiseParse(String input, String baseUri, ParseErrorList errors) {
         Validate.notNull(input, "String input must not be null");
         Validate.notNull(baseUri, "BaseURI must not be null");
