@@ -102,8 +102,7 @@ public abstract class Node implements Cloneable {
         attributes = null;
     }
 
-    // zhijia add to distinguish node types
-    public abstract String nodeType();
+
 
     /**
      Get the node name of this node. Use for debugging purposes and not logic switching (for that, use instanceof).

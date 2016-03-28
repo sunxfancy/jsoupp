@@ -3,10 +3,8 @@ package org.hpar;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.DescendableLinkedList;
 import org.jsoup.nodes.*;
-import org.jsoup.select.*;
 
 import java.util.*;
-
 public class ParallelParser {
 
     int numThreads;
@@ -68,6 +66,8 @@ public class ParallelParser {
                 }
                 end++;
             }
+
+            // TODO: 减少字符串的复制损耗
             inputs[i] = input.substring(start, end);
             System.out.println("input[" + i + "]  from " + start + "~" + end);
         }
@@ -123,27 +123,29 @@ public class ParallelParser {
         Element body0 = docs[0].body();
         Node rightMost = getRightMost(body0);
 
-        List<Node> bodys = docs[index].childNodes();
-        List<Node> children = null;
+        ArrayList<Element> bodys = docs[index].bodys();
+        Node[] children = null;
+
         // handle broken comments
-        if (rightMost.nodeName().equals("#startComment")) {
+        if ("#startComment".equals(rightMost.nodeName())) {
 
             // if 2 body versions, version 0 is comment interpreting;
             // version 1 is normal interpreting, which is useless here
             if (bodys.size() == 2) {
-                children = bodys.get(0).childNodes();
+                children = bodys.get(0).childNodesAsArray();
                 // remove version 1
-                bodys.get(0).remove();
+                bodys.get(0).parent().removeChild(bodys.get(1));
                 // merge EndComment and StartComment
                 String comment = ((StartComment) rightMost).getData()
-                        + ((EndComment) children.get(0)).getData();
+                        + ((EndComment) children[0]).getData();
                 // remove EndComment from bodys.get(0)
-                children.get(0).remove();
+                bodys.get(0).removeChild(children[0]);
                 // replace StartComment with Comment
                 Node commentNode = new Comment(comment, rightMost.baseUri());
                 Element parent = (Element) rightMost.parent();
-                rightMost.remove();
+                parent.removeChild(rightMost);
                 parent.appendChild(commentNode);
+                commentNode.setParent(parent);
                 rightMost = commentNode;
             }
 
@@ -157,25 +159,25 @@ public class ParallelParser {
             else
                 System.out.println("unexpected case in merge.");
         }
-        children = bodys.get(0).childNodes();
+        children = bodys.get(0).childNodesAsArray();
 
         // handle broken scripts
-        if (rightMost.nodeName().equals("DataNode")) {
+        if ("#data".equals(rightMost.nodeName())) {
 
             rightMost = rightMost.parent();
-            if (rightMost.nodeName().equals("script") && ((Element) rightMost).onlyStartTag == true) {
-                if (children.get(1).nodeName().equals("script")
-                        && ((Element) children.get(1)).onlyEndTag == true) {
+            if ("script".equals(rightMost.nodeName()) && ((Element) rightMost).onlyStartTag) {
+                if ("script".equals(children[1].nodeName())
+                        && ((Element) children[1]).onlyEndTag) {
 
-                    if (rightMost.nodeName().equals("script") == false
-                            || ((Element) rightMost).onlyStartTag == false)
+                    if (!"script".equals(rightMost.nodeName())
+                            || !((Element) rightMost).onlyStartTag)
                         System.out.println("err in merging");
 
                     String newData = ((DataNode) rightMost.childNode(0)).getWholeData()
-                            + ((TextNode) children.get(0)).getWholeText();
+                            + ((TextNode) children[0]).getWholeText();
 
                     ((DataNode) rightMost.childNode(0)).setWholeData(newData);
-                    children.get(0).remove();
+                    bodys.get(0).removeChild(children[0]);
                 } else {
                     // the whole inputs[index] is part of a script
                     String newData = ((DataNode) rightMost.childNode(0)).getWholeData()
@@ -185,53 +187,51 @@ public class ParallelParser {
                 }
             }
         }
-        children = bodys.get(0).childNodes();
+        children = bodys.get(0).childNodesAsArray();
 
         // merge two trees
         Node current = rightMost;
-        for (int i = 0; i < children.size(); i++) {
+        for (int i = 0; i < children.length; i++) {
             // move to next start tag
             while (true) {
-                if (current.nodeName().equals("Element") == false) {
+                if (!"#element".equals(current.nodeName())) {
                     current = current.parent();
                     continue;
                 }
 
-                if (((Element) current) == docs[0].body())
+                if (current == docs[0].body())
                     break;
 
-                if (((Element) current).onlyStartTag == true)
+                if (((Element)current).onlyStartTag)
                     break;
                 current = current.parent();
+                if (current == null) break;
             }
 
             // if match
-            if (current.nodeName().equals(children.get(i).nodeName())
-                    && ((Element) children.get(i)).onlyEndTag == true) {
-                ((Element) current).onlyStartTag = false;
+            assert current != null;
+            if (current.nodeName().equals(children[i].nodeName())
+                    && ((Element) children[i]).onlyEndTag) {
+                ((Element)current).onlyStartTag = false;
                 continue;
-            } else if (current.nodeName().equals("tbody") && i < children.size() - 1
-                    && children.get(i+1).nodeName().equals("table")) {
-                ((Element) current).onlyStartTag = false;
+            } else if ("tbody".equals(current.nodeName()) && i < children.length - 1
+                    && "table".equals(children[i + 1].nodeName())) {
+                ((Element)current).onlyStartTag = false;
                 continue;
             }
 
-            ((Element) current).appendChild(children.get(i));
+            ((Element)current).appendChild(children[i]);
         }
 
     }
 
     Node getRightMost(Node root) {
-
         Node rightMost = root;
-        if (rightMost.childNodes().size() == 0)
+        if (rightMost.childNodesAsArray().length == 0)
             return root;
-        List<Node> children;
         do {
-            children = rightMost.childNodes();
-            rightMost = children.get(children.size() - 1);
-        } while (children.size() != 0);
-
+            rightMost = rightMost.childNodesAsArray()[rightMost.childNodesAsArray().length - 1];
+        } while (rightMost.childNodesAsArray().length != 0);
         return rightMost;
     }
 }

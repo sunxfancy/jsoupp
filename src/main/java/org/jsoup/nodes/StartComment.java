@@ -34,9 +34,4 @@ public class StartComment extends Node {
         return outerHtml();
     }
     
-    @Override
-    public String nodeType() {
-        return "StartComment";
-    }
-
 }

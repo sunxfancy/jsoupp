@@ -35,6 +35,31 @@ final class Tokeniser {
     private String lastStartTag; // the last start tag emitted, to test appropriate end tag
     private boolean selfClosingFlagAcknowledged = true;
 
+
+    Token.StartComment startCommentPending;	// zhijia added
+    Token.EndComment endCommentPending;  // zhijia added
+
+    // zhijia added
+    void createStartCommentPending() {
+    	startCommentPending = new Token.StartComment();
+    }
+
+    // zhijia added
+    void createEndCommentPending() {
+    	endCommentPending = new Token.EndComment();
+    }
+
+    // zhijia added
+    void emitStartCommentPending() {
+        emit(startCommentPending);
+    }
+
+    // zhijia added
+    void emitEndCommentPending() {
+        emit(endCommentPending);
+    }
+
+
     Tokeniser(CharacterReader reader, ParseErrorList errors) {
         this.reader = reader;
         this.errors = errors;

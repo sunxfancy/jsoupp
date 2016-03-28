@@ -13,7 +13,7 @@ abstract class Token {
 
     private Token() {
     }
-    
+
     String tokenType() {
         return this.getClass().getSimpleName();
     }
@@ -27,6 +27,65 @@ abstract class Token {
     static void reset(StringBuilder sb) {
         if (sb != null) {
             sb.delete(0, sb.length());
+        }
+    }
+
+    enum TokenType {
+        Doctype,
+        StartTag,
+        EndTag,
+        Comment,
+        StartComment,   // zhijia added
+        EndComment,		// zhijia added
+        Character,
+        EOF
+    }
+
+    // zhijia added
+    static class StartComment extends Token {
+        final StringBuilder data = new StringBuilder();
+
+        StartComment() {
+            type = TokenType.StartComment;
+        }
+
+        String getData() {
+            return data.toString();
+        }
+
+        @Override
+        public String toString() {
+            return "<!--" + getData();
+        }
+
+        @Override
+        Token reset() {
+            reset(data);
+            return this;
+        }
+    }
+
+    // zhijia added
+    static class EndComment extends Token {
+        final StringBuilder data = new StringBuilder();
+
+        EndComment() {
+            type = TokenType.EndComment;
+        }
+
+        String getData() {
+            return data.toString();
+        }
+
+        @Override
+        public String toString() {
+            return getData() + "-->";
+        }
+
+        @Override
+        Token reset() {
+            reset(data);
+            return this;
         }
     }
 
@@ -165,7 +224,7 @@ abstract class Token {
             ensureAttributeValue();
             pendingAttributeValue.append(append);
         }
-        
+
         final void setEmptyAttributeValue() {
             hasEmptyAttributeValue = true;
         }
@@ -326,12 +385,5 @@ abstract class Token {
         return type == TokenType.EOF;
     }
 
-    enum TokenType {
-        Doctype,
-        StartTag,
-        EndTag,
-        Comment,
-        Character,
-        EOF
-    }
+
 }
