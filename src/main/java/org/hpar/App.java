@@ -19,9 +19,6 @@ public class App
             e.printStackTrace();
         }
 
-        Document d = Parser.parse(data, "");
-
-
         ParallelParser pp = new ParallelParser(data, 4);
         Document dd = pp.parse();
     }
