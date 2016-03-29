@@ -20,8 +20,7 @@ public class App
         }
 
         Document d = Parser.parse(data, "");
-        Visualization v = new Visualization(d);
-        v.ShowNodeTree();
+
 
         ParallelParser pp = new ParallelParser(data, 4);
         Document dd = pp.parse();

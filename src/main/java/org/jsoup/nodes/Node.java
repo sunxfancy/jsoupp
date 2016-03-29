@@ -27,6 +27,7 @@ public abstract class Node implements Cloneable {
 
     // zhijia added, default = 0
     int versionIndex = 0;
+    public int showNum = 0;
 
 
     // zhijia add to remove the childNodes

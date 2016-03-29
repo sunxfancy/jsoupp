@@ -38,14 +38,15 @@ public class AppTest
     public void testApp()
     {
         String data = "";
+        Document d = null;
         try {
             data = App.readFile("src/test/data/index.html");
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
 
-        ParallelParser pp = new ParallelParser(data, 4);
-        Document d = pp.parse();
+            ParallelParser pp = new ParallelParser(data, 4);
+            d = pp.parse();
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
         assertTrue(d != null);
     }
 }

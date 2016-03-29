@@ -1,12 +1,13 @@
 package org.jsoup.parser;
 
-import org.jsoup.helper.DescendableLinkedList;
 import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 /**
  * @author Jonathan Hedley
@@ -69,6 +70,54 @@ abstract class TreeBuilder {
 
             if (token.type == Token.TokenType.EOF)
                 break;
+        }
+        updateDoc();
+    }
+
+
+    // zhijia add to update doc tree according to open stack emlement
+    void updateDoc() {
+        Node root = (Node) doc;
+        Stack<Node> shadow = new Stack<Node>();
+
+        // get html Element
+        Node rightMost = null;
+        for (int i = 0; i < root.childNodesAsArray().length; i++) {
+            if (root.childNode(i).nodeName().endsWith("html")) {
+                rightMost = root.childNode(i);
+                break;
+            }
+        }
+
+        shadow.push(rightMost);
+        // get body Element, considering body1
+        assert rightMost != null;
+        while (rightMost.childNodesAsArray().length > 0) {
+            rightMost = rightMost.childNodesAsArray()[rightMost.childNodesAsArray().length - 1];
+            shadow.push(rightMost);
+        }
+        shadow.push(rightMost);
+
+        // pop out the elements those are supposed to be complete
+        while (shadow.size() > stack.size())
+            shadow.pop();
+
+        while (shadow.size() > 0) {
+            Node current = shadow.pop();
+            // System.out.println("stack.peekLast().nodeName(): "+stack.peekLast().nodeName());
+            // System.out.println("current.nodeName()         : "+current.nodeName());
+            if (stack.get(stack.size()-1).nodeName().equals("body")
+                    || stack.get(stack.size() - 1).nodeName().equals("head")
+                    || current.nodeName().equals("body") || current.nodeName().equals("head"))
+                break;
+
+            if (current.nodeName().equals(stack.get(stack.size()-1).nodeName())) {
+                stack.remove(stack.size()-1);
+                ((Element) current).onlyStartTag = true;
+            } else {
+                System.out.println(Thread.currentThread().getName()
+                        + " err: stack doesn't match with shadow stack");
+            }
         }
     }
 

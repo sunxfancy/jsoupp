@@ -111,6 +111,10 @@ public class ParallelParser {
 
     // merge trees to form single DOM tree
     Document postprocess(Document[] docs) {
+        for (int i = 0; i < numThreads; ++i) {
+            Visualization v = new Visualization(docs[i], "show"+i+".dot");
+            v.ShowNodeTree();
+        }
         for (int i = 1; i < numThreads; i++) {
             merge(docs, i);
         }
