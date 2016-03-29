@@ -1,10 +1,87 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8">
-        <title>Jsoupp - A Parallel Parser based Jsoup for Html5</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="author" content="sxf" />
+        <title>Jsoupp - A Parallel Html5 Parser based on Jsoup</title>
+        <meta name="description" content="HPar - A Parallel Html5 Parser based on Jsoup" />
+    	<meta name="keywords"  content="hpar,parallel,html,parser,jsoup" />
+    	<meta name="Resource-type" content="Document" />
+
+        <link rel="stylesheet" href="css/jquery.fullPage.css" media="screen" charset="utf-8">
+        <style>
+        	/* Style for our header texts
+        	* --------------------------------------- */
+        	h1{
+        		font-size: 5em;
+        		font-family: arial,helvetica;
+        		color: #fff;
+        		margin:0;
+        	}
+        	.intro p{
+        		color: #fff;
+        	}
+
+        	/* Centered texts in each section
+        	* --------------------------------------- */
+        	.section{
+        		text-align:center;
+        	}
+
+        	/* Overwriting styles for control arrows for slides
+        	* --------------------------------------- */
+        	.controlArrow.prev {
+        		left: 50px;
+        	}
+        	.controlArrow.next{
+        		right: 50px;
+        	}
+
+        	/* Bottom menu
+        	* --------------------------------------- */
+        	#infoMenu li a {
+        		color: #fff;
+        	}
+    	</style>
     </head>
     <body>
-        <h1>Jsoupp - A Parallel Parser based Jsoup for Html5</h1>
+        <a href="https://github.com/sunxfancy/jsoupp">
+            <img style="position: fixed;z-index:99; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub">
+        </a>
+        <div id="fullpage">
+        	<div class="section" id="section0">
+        		<div class="intro">
+        			<img src="https://raw.githubusercontent.com/alvarotrigo/fullPage.js/master/examples/imgs/1.png"  alt="1"/>
+                    <h1>HPar</h1>
+        			<p>A Parallel Html5 Parser based on Jsoup</p>
+        		</div>
+        	</div>
+        	<div class="section" id="section1">
+    			<div class="intro">
+    				<h1>Parallel - So fast</h1>
+    				<p>On the MacBook Pro with four cores, HPar achieves speedups as high as 2.4x. Its average speedup is 1.73x.</p>
+    			</div>
+        	</div>
+        	<div class="section" id="section2">
+        		<div class="intro">
+        			<h1>Enjoy it</h1>
+        		</div>
+        	</div>
+        </div>
+
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/jquery-1.11.1.min.js" type="text/javascript"><\/script>')</script>
+        <script type="text/javascript" src="js/jquery.fullPage.min.js"></script>
+    	<script type="text/javascript">
+    		$(document).ready(function() {
+    			$('#fullpage').fullpage({
+    				anchors: ['firstPage', 'secondPage', '3rdPage'],
+    				sectionsColor: ['#1BBC9B', '#1BBC9B', '#7E8F7C'],
+    				navigation: true,
+    				navigationPosition: 'right',
+    				navigationTooltips: ['First', 'Second', 'Third']
+    			});
+    		});
+    	</script>
     </body>
 </html>
