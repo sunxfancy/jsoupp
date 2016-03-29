@@ -66,6 +66,56 @@ public class HtmlTreeBuilder extends TreeBuilder {
         // stateMap.put("table", HtmlTreeBuilderState.InTableText);
     }
 
+    // zhijia add to reset the parser when <table> tag is broken
+    void reset(String name) {
+        super.reset();
+        this.state = stateMap.get(name);
+    }
+
+    // zhijia add to reset the parser caused by broken script tag
+    void emptyFormattingElements() {
+        this.formattingElements = new ArrayList<Element>();
+    }
+
+
+    // zhijia add to insert endTag tokens which are normally ignored
+    Element insert(Token.EndTag endTag) {
+        Element body = doc.body();
+
+        Attributes attr = new Attributes();
+        Element el = new Element(Tag.valueOf(endTag.name()), baseUri, attr);
+        el.onlyEndTag = true;
+
+        body.appendChild(el);
+
+        return el;
+    }
+
+    // zhijia add to insert startComment tokens
+    void insert(Token.StartComment startCommentToken) {
+        StartComment startComment = new StartComment(startCommentToken.getData(), baseUri);
+        insertNode(startComment);
+    }
+
+    // zhijia add to insert endComment tokens
+    void insert(Token.EndComment endCommentToken) {
+        EndComment endComment = new EndComment(endCommentToken.getData(), baseUri);
+
+        // make html have two body nodes: bodyCopy and body
+        // bodyCopy for normal interpreting, body for endComment interpreting
+        Element body = doc.body();
+        Element bodyCopy = new Element(body.tag(), body.baseUri(), body.attributes());
+        bodyCopy.setVersionIndex(body.getVersionIndex() + 1);
+        Node[] bodyChildren = body.childNodesAsArray();
+        for (int i = 0; i < bodyChildren.length; i++) {
+            bodyCopy.appendChild(bodyChildren[i]);
+        }
+        bodyCopy.setParent(body.parent());
+        body.parent().addChildren(bodyCopy);
+        body.removeChildNodes();
+        insertNode(endComment);
+    }
+
     @Override
     Document parse(String input, String baseUri, ParseErrorList errors) {
         state = HtmlTreeBuilderState.Initial;
@@ -351,15 +401,18 @@ public class HtmlTreeBuilder extends TreeBuilder {
     }
 
     void clearStackToTableContext() {
-        clearStackToContext("table");
+        // zhijia add "body" to handle broken table tag
+        clearStackToContext("table", "body");
     }
 
     void clearStackToTableBodyContext() {
-        clearStackToContext("tbody", "tfoot", "thead");
+        // zhijia add "body" to handle broken table tag
+        clearStackToContext("tbody", "tfoot", "thead", "body");
     }
 
     void clearStackToTableRowContext() {
-        clearStackToContext("tr");
+        // zhijia add "body" to handle broken table tag
+        clearStackToContext("tr", "body");
     }
 
     private void clearStackToContext(String... nodeNames) {

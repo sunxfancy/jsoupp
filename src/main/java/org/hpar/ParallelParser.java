@@ -194,6 +194,7 @@ public class ParallelParser {
         for (int i = 0; i < children.length; i++) {
             // move to next start tag
             while (true) {
+                if (current == null) break;
                 if (!"#element".equals(current.nodeName())) {
                     current = current.parent();
                     continue;
@@ -205,7 +206,6 @@ public class ParallelParser {
                 if (((Element)current).onlyStartTag)
                     break;
                 current = current.parent();
-                if (current == null) break;
             }
 
             // if match

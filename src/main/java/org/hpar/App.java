@@ -1,6 +1,7 @@
 package org.hpar;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.parser.Parser;
 
 import java.io.IOException;
 import java.io.*;
@@ -18,8 +19,12 @@ public class App
             e.printStackTrace();
         }
 
+        Document d = Parser.parse(data, "");
+        Visualization v = new Visualization(d);
+        v.ShowNodeTree();
+
         ParallelParser pp = new ParallelParser(data, 4);
-        Document d = pp.parse();
+        Document dd = pp.parse();
     }
 
     public static String readFile(String fileName) throws IOException {

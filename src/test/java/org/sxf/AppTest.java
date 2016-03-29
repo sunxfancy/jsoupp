@@ -39,7 +39,7 @@ public class AppTest
     {
         String data = "";
         try {
-            data = App.readFile("src/test/data/generated.html");
+            data = App.readFile("src/test/data/index.html");
         } catch(IOException e) {
             e.printStackTrace();
         }

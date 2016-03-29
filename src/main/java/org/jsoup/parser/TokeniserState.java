@@ -29,7 +29,9 @@ enum TokeniserState {
                     ////////////////////////////////////////////
                     // zhijia added to emit EndComment tokens for non-first thread
                     int index = -1;
-                    if(Thread.currentThread().getName().equals("0") == false
+                    // TODO: 这里的判断有点问题，不等于0就认为是工作线程恐怕不大对
+                    //       还有可能是用户主动开了另外一个线程在运行
+                    if(!Thread.currentThread().getName().equals("0")
                     	&&  (index = data.indexOf("-->")) != -1) {
                     	t.createEndCommentPending();
                     	// consider case "hello-->world"
