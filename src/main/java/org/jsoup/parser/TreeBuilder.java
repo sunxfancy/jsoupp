@@ -102,6 +102,7 @@ abstract class TreeBuilder {
         while (shadow.size() > stack.size())
             shadow.pop();
 
+
         while (shadow.size() > 0) {
             Node current = shadow.pop();
             // System.out.println("stack.peekLast().nodeName(): "+stack.peekLast().nodeName());
@@ -111,6 +112,7 @@ abstract class TreeBuilder {
                     || current.nodeName().equals("body") || current.nodeName().equals("head"))
                 break;
 
+            // TODO: 也许需要再考虑一下用nodeName判断是否会因为用户的部分标签遗漏而导致匹配错误
             if (current.nodeName().equals(stack.get(stack.size()-1).nodeName())) {
                 stack.remove(stack.size()-1);
                 ((Element) current).onlyStartTag = true;

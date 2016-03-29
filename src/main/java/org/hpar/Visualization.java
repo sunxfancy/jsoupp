@@ -18,6 +18,10 @@ public class Visualization {
     Node node;
     int num = 0;
 
+    public Visualization(Node node) {
+        this.node = node;
+    }
+
     public Visualization(Node node, String save_file) {
         this.node = node;
         this.save_file = save_file;

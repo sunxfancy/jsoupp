@@ -4,6 +4,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.helper.DescendableLinkedList;
 import org.jsoup.nodes.*;
 
+import java.awt.*;
 import java.util.*;
 public class ParallelParser {
 
@@ -195,25 +196,24 @@ public class ParallelParser {
 
         // merge two trees
         Node current = rightMost;
+        System.out.println(current);
+
         for (int i = 0; i < children.length; i++) {
             // move to next start tag
             while (true) {
                 if (current == null) break;
-                if (!"#element".equals(current.nodeName())) {
-                    current = current.parent();
-                    continue;
-                }
-
                 if (current == docs[0].body())
                     break;
 
-                if (((Element)current).onlyStartTag)
+                if (current instanceof Element &&
+                        ((Element)current).onlyStartTag)
                     break;
                 current = current.parent();
             }
-
+            System.out.println(current);
             // if match
             assert current != null;
+            assert current instanceof Element;
             if (current.nodeName().equals(children[i].nodeName())
                     && ((Element) children[i]).onlyEndTag) {
                 ((Element)current).onlyStartTag = false;
