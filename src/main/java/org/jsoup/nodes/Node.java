@@ -622,7 +622,14 @@ public abstract class Node implements Cloneable {
 
         Node node = (Node) o;
 
-        if (childNodes != null ? !childNodes.equals(node.childNodes) : node.childNodes != null) return false;
+        if (childNodes != null ? !childNodes.equals(node.childNodes) : node.childNodes != null) {
+
+            // sxf add for diff
+            System.out.println("expect: " + childNodes);
+            System.out.println("now: " + node.childNodes);
+            System.exit(0);
+            return false;
+        }
         return !(attributes != null ? !attributes.equals(node.attributes) : node.attributes != null);
     }
 

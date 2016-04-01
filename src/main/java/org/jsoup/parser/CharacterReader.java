@@ -36,10 +36,18 @@ final class CharacterReader {
     	return inputString.substring(start, end);
     }
 
+
     CharacterReader(String input) {
         Validate.notNull(input);
-        this.input = input.toCharArray();
-        this.length = this.input.length;
+//        this.input = input.toCharArray();
+        // sxf added for cloning string
+        this.input = new char[input.length() + 1];
+        for (int i = 0; i < input.length(); i++) {
+            this.input[i] = input.charAt(i);
+        }
+        this.input[input.length()] = EOF;
+
+        this.length = input.length();
         // zhijia added
         this.inputString = input;
     }
@@ -53,13 +61,17 @@ final class CharacterReader {
     }
 
     char current() {
-        return pos >= length ? EOF : input[pos];
+        // sxf improve profile
+//        return pos < length ? input[pos] : EOF;
+        return input[pos];
     }
 
     char consume() {
-        char val = pos >= length ? EOF : input[pos];
-        pos++;
-        return val;
+        // sxf improve profile
+        return input[pos++];
+//        char val = pos >= length ? EOF : input[pos];
+//        pos++;
+//        return val;
     }
 
     void unconsume() {
@@ -106,6 +118,10 @@ final class CharacterReader {
         // doesn't handle scanning for surrogates
         char startChar = seq.charAt(0);
         for (int offset = pos; offset < length; offset++) {
+
+            // sxf improve profile but should do more tests
+//            if (offset-pos > seq.length()) break;
+
             // scan to first instance of startchar:
             if (startChar != input[offset])
                 while(++offset < length && startChar != input[offset]) { /* empty */ }
@@ -345,6 +361,7 @@ final class CharacterReader {
     }
 
     boolean containsIgnoreCase(String seq) {
+//        System.out.print(seq);System.out.print(' ');
         // used to check presence of </title>, </style>. only finds consistent case.
         String loScan = seq.toLowerCase(Locale.ENGLISH);
         String hiScan = seq.toUpperCase(Locale.ENGLISH);
