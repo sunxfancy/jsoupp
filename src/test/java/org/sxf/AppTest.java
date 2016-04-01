@@ -40,7 +40,7 @@ public class AppTest
         String data = "";
         Document d = null;
         try {
-            data = App.readFile("src/test/data/index.html");
+            data = App.readFile("src/test/extern/index.html");
 
             ParallelParser pp = new ParallelParser(data, 4);
             d = pp.parse();
