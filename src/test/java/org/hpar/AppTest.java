@@ -1,12 +1,12 @@
-package org.sxf;
+package org.hpar;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.hpar.*;
-import org.jsoup.*;
 import org.jsoup.nodes.*;
-import java.io.*;
+import org.jsoup.parser.Parser;
+
+import java.io.IOException;
 
 /**
  * Unit test for simple App.
@@ -35,18 +35,26 @@ public class AppTest
     /**
      * Rigourous Test :-)
      */
-    public void testApp()
-    {
-        String data = "";
+    public void testApp() throws IOException {
+        String data = App.readFile("src/test/extern/index.html");
+
+        long begin = System.nanoTime();
+        Document dd = Parser.parse(data, "");
+        long end = System.nanoTime();
+        System.out.println("normal time: " + (end - begin) / 1000000 + "ms");
+
         Document d = null;
         try {
-            data = App.readFile("src/test/extern/index.html");
-
             ParallelParser pp = new ParallelParser(data, 4);
             d = pp.parse();
         } catch (Exception e1) {
             e1.printStackTrace();
         }
-        assertTrue(d != null);
+        assertNotNull(d);
+        System.out.println(dd.tag());
+        System.out.println(d.tag());
+        assertTrue(d.getClass() == dd.getClass());
+
+        assertTrue(dd.equals(d));
     }
 }
