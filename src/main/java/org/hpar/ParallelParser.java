@@ -4,7 +4,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.helper.DescendableLinkedList;
 import org.jsoup.nodes.*;
 
-import java.awt.*;
 import java.util.*;
 public class ParallelParser {
 
@@ -31,7 +30,6 @@ public class ParallelParser {
             pparsers[i] = new ParserThread(i + "", inputs[i]);
             pparsers[i].start();
         }
-
         for (int i = 0; i < numThreads; i++) {
             try {
                 pparsers[i].join();
@@ -43,8 +41,8 @@ public class ParallelParser {
         Document doc = postprocess(docs);
         long end = System.nanoTime();
 
-        System.out.println("thread parsing time: " + (mid - sta));
-        System.out.println("postprocessing time: " + (end - mid));
+        System.out.println("thread parsing time: " + (mid - sta)/1000000 + "ms");
+        System.out.println("postprocessing time: " + (end - mid)/1000000 + "ms");
 
         return doc;
     }
@@ -105,17 +103,20 @@ public class ParallelParser {
         }
 
         public void run() {
+            long sta = System.nanoTime();
             int threadID = Integer.parseInt(getName());
             docs[threadID] = Jsoup.parse(input);
+            long end = System.nanoTime();
+            System.out.println("thread run time: " + (end - sta)/1000000 + "ms");
         }
     }
 
     // merge trees to form single DOM tree
     Document postprocess(Document[] docs) {
-        for (int i = 0; i < numThreads; ++i) {
-            Visualization v = new Visualization(docs[i], "show"+i+".dot");
-            v.ShowNodeTree();
-        }
+//        for (int i = 0; i < numThreads; ++i) {
+//            Visualization v = new Visualization(docs[i], "show"+i+".dot");
+//            v.ShowNodeTree();
+//        }
         for (int i = 1; i < numThreads; i++) {
             merge(docs, i);
         }
@@ -196,8 +197,6 @@ public class ParallelParser {
 
         // merge two trees
         Node current = rightMost;
-        System.out.println(current);
-
         for (int i = 0; i < children.length; i++) {
             // move to next start tag
             while (true) {
@@ -210,7 +209,6 @@ public class ParallelParser {
                     break;
                 current = current.parent();
             }
-            System.out.println(current);
             // if match
             assert current != null;
             assert current instanceof Element;

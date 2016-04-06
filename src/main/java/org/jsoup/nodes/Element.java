@@ -23,7 +23,6 @@ public class Element extends Node {
 
     private static final Pattern classSplit = Pattern.compile("\\s+");
 
-
     // zhijia add end/startTag label
     public boolean onlyEndTag;
     public boolean onlyStartTag;
