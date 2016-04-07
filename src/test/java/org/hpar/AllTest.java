@@ -56,7 +56,7 @@ public class AllTest extends TestCase {
         System.out.println(dd.tag());
         System.out.println(d.tag());
         assertTrue(d.getClass() == dd.getClass());
-        k++;
-//        assertTrue(dd.equals(d));
+//        if (dd.equals(d))
+            k++;
     }
 }

@@ -42,6 +42,9 @@ abstract class TreeBuilder {
         Validate.notNull(input, "String input must not be null");
         Validate.notNull(baseUri, "BaseURI must not be null");
 
+        // zhijia added for init(fix)
+        this.input = input;
+
         doc = new Document(baseUri);
         reader = new CharacterReader(input);
         this.errors = errors;

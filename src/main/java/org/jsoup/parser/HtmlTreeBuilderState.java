@@ -922,13 +922,13 @@ enum HtmlTreeBuilderState {
                         // zhijia add to handle broken table tag
                         //tb.error(this);
                         //return false;
+//                        System.out.println(endTag);
                         tb.insert(endTag);
-//                        tb.error(this);
-//                        return false;
+                        return true; // sxf fixed, need more checked!
                     } else {
                         tb.popStackToClose("table");
+                        tb.resetInsertionMode();
                     }
-                    tb.resetInsertionMode();
                 } else if (StringUtil.in(name,
                         "body", "caption", "col", "colgroup", "html", "tbody", "td", "tfoot", "th", "thead", "tr")) {
                     tb.error(this);
@@ -1342,8 +1342,10 @@ enum HtmlTreeBuilderState {
                             tb.error(this);
                     } else if (name.equals("select")) {
                         if (!tb.inSelectScope(name)) {
-                            tb.error(this);
-                            return false;
+//                            tb.error(this);
+//                            return false;
+                            tb.insert(end);
+                            return false; // sxf fixed, need more checked!
                         } else {
                             tb.popStackToClose(name);
                             tb.resetInsertionMode();
