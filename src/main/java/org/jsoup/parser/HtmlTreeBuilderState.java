@@ -892,8 +892,8 @@ enum HtmlTreeBuilderState {
                 } else if (name.equals("table")) {
                     tb.error(this);
                     boolean processed = tb.processEndTag("table");
-                    if (processed) // only ignored if in fragment
-                        return tb.process(t);
+                    // only ignored if in fragment
+                    return processed && tb.process(t); // sxf changed~
                 } else if (StringUtil.in(name, "style", "script")) {
                     return tb.process(t, InHead);
                 } else if (name.equals("input")) {
@@ -920,15 +920,12 @@ enum HtmlTreeBuilderState {
                 if (name.equals("table")) {
                     if (!tb.inTableScope(name)) {
                         // zhijia add to handle broken table tag
-                        //tb.error(this);
-                        //return false;
-//                        System.out.println(endTag);
+//                        tb.error(this);
+//                        return false;
                         tb.insert(endTag);
-                        return true; // sxf fixed, need more checked!
-                    } else {
-                        tb.popStackToClose("table");
-                        tb.resetInsertionMode();
-                    }
+                        return false; // sxf fixed, need more checked!
+                    } else tb.popStackToClose("table");
+                    tb.resetInsertionMode();
                 } else if (StringUtil.in(name,
                         "body", "caption", "col", "colgroup", "html", "tbody", "td", "tfoot", "th", "thead", "tr")) {
                     tb.error(this);

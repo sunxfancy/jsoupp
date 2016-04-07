@@ -68,7 +68,9 @@ public class ParallelParser {
 
             // TODO: 减少字符串的复制损耗
             inputs[i] = input.substring(start, end);
+            System.out.println(inputs[i].substring(0, 20));
             System.out.println("input[" + i + "]  from " + start + "~" + end);
+            System.out.println(inputs[i].substring(inputs[i].length()-20, inputs[i].length()));
         }
         for (int i = 1; i < numThreads; i++) {
             inputs[i] = "<body>" + inputs[i];

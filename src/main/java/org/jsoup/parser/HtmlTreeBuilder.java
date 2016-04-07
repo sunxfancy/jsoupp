@@ -456,9 +456,17 @@ public class HtmlTreeBuilder extends TreeBuilder {
         boolean last = false;
         for (int pos = stack.size() -1; pos >= 0; pos--) {
             Element node = stack.get(pos);
-            if (pos == 0) {
+            if (pos == 0 || node == null) { // sxf fixed
+//            if (pos == 0) {
                 last = true;
                 node = contextElement;
+
+                /////////////////
+                // sxf added
+                if (node == null) {
+                    break;
+                }
+                ///////////////
             }
             String name = node.nodeName();
             if ("select".equals(name)) {

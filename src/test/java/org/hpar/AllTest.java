@@ -14,11 +14,13 @@ import java.io.IOException;
 public class AllTest extends TestCase {
 
     int k = 0;
+    int p = 0;
     int all = 0;
     public void testAll() {
         k = 0;
         loadAllFiles("src/test/extern/websites");
         System.out.println("正确率： " + k*100/all + "%");
+        System.out.println("崩溃率： " + (all-p)*100/all + "%");
     }
 
     public void loadAllFiles(String filePath) {
@@ -53,10 +55,11 @@ public class AllTest extends TestCase {
             throw e1;
         }
         assertNotNull(d);
-        System.out.println(dd.tag());
-        System.out.println(d.tag());
         assertTrue(d.getClass() == dd.getClass());
-//        if (dd.equals(d))
+        p++;
+        if (!dd.equals(d)) {
             k++;
+            System.out.println("出现异常！");
+        }
     }
 }
