@@ -36,12 +36,9 @@ public class AppTest
      * Rigourous Test :-)
      */
     public void testApp() throws IOException {
-        String data = App.readFile("src/test/extern/index.html");
 
-        long begin = System.nanoTime();
+        String data = App.readFile("src/test/extern/index.html");
         Document dd = Parser.parse(data, "");
-        long end = System.nanoTime();
-        System.out.println("normal time: " + (end - begin) / 1000000 + "ms");
 
         Document d = null;
         try {
@@ -50,6 +47,7 @@ public class AppTest
         } catch (Exception e1) {
             e1.printStackTrace();
         }
+
         assertNotNull(d);
         System.out.println(dd.tag());
         System.out.println(d.tag());

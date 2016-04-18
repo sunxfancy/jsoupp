@@ -48,7 +48,7 @@ public class AllTest extends TestCase {
 
         Document d = null;
         try {
-            ParallelParser pp = new ParallelParser(data, 4);
+            ParallelParser pp = new ParallelParser(data, 16);
             d = pp.parse();
         } catch (Exception e1) {
             e1.printStackTrace();
@@ -58,8 +58,9 @@ public class AllTest extends TestCase {
         assertTrue(d.getClass() == dd.getClass());
         p++;
         if (!dd.equals(d)) {
-            k++;
             System.out.println("出现异常！");
+        } else {
+            k++;
         }
     }
 }

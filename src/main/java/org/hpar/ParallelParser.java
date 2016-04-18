@@ -25,7 +25,7 @@ public class ParallelParser {
 
         Thread[] pparsers = new ParserThread[numThreads];
 
-        long sta = System.nanoTime();
+//        long sta = System.nanoTime();
         for (int i = 0; i < numThreads; i++) {
             pparsers[i] = new ParserThread(i + "", inputs[i]);
             pparsers[i].start();
@@ -37,12 +37,12 @@ public class ParallelParser {
                 e.printStackTrace();
             }
         }
-        long mid = System.nanoTime();
+//        long mid = System.nanoTime();
         Document doc = postprocess(docs);
-        long end = System.nanoTime();
+//        long end = System.nanoTime();
 
-        System.out.println("thread parsing time: " + (mid - sta)/1000000 + "ms");
-        System.out.println("postprocessing time: " + (end - mid)/1000000 + "ms");
+//        System.out.println("thread parsing time: " + (mid - sta)/1000000 + "ms");
+//        System.out.println("postprocessing time: " + (end - mid)/1000000 + "ms");
 
         return doc;
     }
@@ -68,9 +68,9 @@ public class ParallelParser {
 
             // TODO: 减少字符串的复制损耗
             inputs[i] = input.substring(start, end);
-            System.out.println(inputs[i].substring(0, 20));
-            System.out.println("input[" + i + "]  from " + start + "~" + end);
-            System.out.println(inputs[i].substring(inputs[i].length()-20, inputs[i].length()));
+//            System.out.println(inputs[i].substring(0, 20));
+//            System.out.println("input[" + i + "]  from " + start + "~" + end);
+//            System.out.println(inputs[i].substring(inputs[i].length()-20, inputs[i].length()));
         }
         for (int i = 1; i < numThreads; i++) {
             inputs[i] = "<body>" + inputs[i];
@@ -105,11 +105,11 @@ public class ParallelParser {
         }
 
         public void run() {
-            long sta = System.nanoTime();
+//            long sta = System.nanoTime();
             int threadID = Integer.parseInt(getName());
             docs[threadID] = Jsoup.parse(input);
-            long end = System.nanoTime();
-            System.out.println("thread run time: " + (end - sta)/1000000 + "ms");
+//            long end = System.nanoTime();
+//            System.out.println("thread run time: " + (end - sta)/1000000 + "ms");
         }
     }
 
