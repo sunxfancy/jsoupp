@@ -62,7 +62,7 @@ public class MetaLexicon {
 
     void skipSpace() {
         while (pos < data_end) {
-            if (!Character.isSpaceChar(data[pos]))
+            if (!Character.isWhitespace(data[pos]))
                 return;
             ++pos;
         }
@@ -82,56 +82,84 @@ public class MetaLexicon {
         }
     }
 
+    public void print() {
+        for (tag t: tags) {
+            System.out.println("Match: "+String.copyValueOf(data, t.pos, t.size));
+            System.out.println("from: "+t.pos+" - "+(t.pos+t.size));
+        }
+    }
 
-    void find() {
+    public List<tag> find() {
         reset();
-        boolean script_open = false;
+        boolean tag_open = false;
+        boolean comment_open = false;
+
         while (pos < data_end) {
             switch (data[pos]) {
                 case '<': {
+                    if (comment_open) { ++pos; break; }
                     int first = pos++;
-                    if (data[pos] == '!' && pos+2 < data_end
+                    if (data[pos] == '/') {
+                        pos++;
+                        if (findScriptClose(first))
+                            tag_open = false;
+                    } else if (data[pos] == '!' && pos+2 < data_end
                             && data[pos+1]=='-' && data[pos+2]=='-') {
                         pos += 3;
                         tags.add(new tag(first, pos, tag.comment_begin));
-                    } else if (data[pos] == '/') {
-                        if (findScript(first))
-                            script_open = true;
+                        comment_open = true;
                     } else {
-                        if (findScriptClose(first))
-                            script_open = false;
+                        if (findScript(first))
+                            tag_open = true;
                     }
                 } break;
                 case '-': {
+                    if (tag_open) { ++pos; break; }
                     if (pos+2 < data_end
                             && data[pos+1]=='-' && data[pos+2]=='>') {
-                        tags.add(new tag(pos, pos+3, tag.comment_begin));
-                        pos += 3;
-
+                        tags.add(new tag(pos, pos+3, tag.comment_end));
+                        pos += 2;
+                        comment_open = false;
                     }
                     ++pos;
                 } break;
                 case '\'':
                 case '\"': {
-                    if (!script_open) { ++pos; break; }
+                    if (comment_open||!tag_open) { ++pos; break; }
                     skipQuote();
                 } break;
                 default:
                     ++pos;
             }
         }
+        return tags;
     }
 
-    static char[] script = "script".toCharArray();
+    static char[] script = "ript".toCharArray();
+    static char[] style = "yle".toCharArray();
+
+
 
     boolean findScript(int begin) {
         skipSpace();
-        for (char c: script) {
-            if (pos < data_end && data[pos] == c) ++pos;
-            else return false;
-        }
+        if (!(pos < data_end && data[pos] == 's')) return false;
+        ++pos;
+        if (data[pos] == 'c') {
+            ++pos;
+            for (char c: script) {
+                if (pos < data_end && data[pos] == c) ++pos;
+                else return false;
+            }
+        } else if (data[pos] == 't') {
+            ++pos;
+            for (char c: style) {
+                if (pos < data_end && data[pos] == c) ++pos;
+                else return false;
+            }
+        } else return false;
         while (pos < data_end && data[pos] != '>') ++pos;
-        int end = pos++;
+        if (data[pos-1] == '/') return false;
+        int end = ++pos;
         tags.add(new tag(begin, end, tag.script_begin));
         return true;
     }
@@ -139,13 +167,24 @@ public class MetaLexicon {
 
     boolean findScriptClose(int begin) {
         skipSpace();
-        for (char c: script) {
-            if (pos < data_end && data[pos] == c) ++pos;
-            else return false;
-        }
+        if (!(pos < data_end && data[pos] == 's')) return false;
+        ++pos;
+        if (data[pos] == 'c') {
+            ++pos;
+            for (char c: script) {
+                if (pos < data_end && data[pos] == c) ++pos;
+                else return false;
+            }
+        } else if (data[pos] == 't') {
+            ++pos;
+            for (char c: style) {
+                if (pos < data_end && data[pos] == c) ++pos;
+                else return false;
+            }
+        } else return false;
         skipSpace();
         if (pos < data_end && data[pos] == '>') {
-            int end = pos++;
+            int end = ++pos;
             tags.add(new tag(begin, end, tag.script_end));
             return true;
         }
@@ -170,7 +209,7 @@ class Lex {
         this.data = data;
         this.begin = begin;
         this.end = end;
-        script = Pattern.compile("(<\\s*script[^>]*>)|(</\\s*script\\s*>)|(<!--)|(-->)| \'([^']|\\\\')\' | \"([^']|\\\\')\"");
+        script = Pattern.compile("(<\\s*script[^>]*>)|(</\\s*script\\s*>)|(<!--)|(-->)| \'([^']|\\\\')\' | \"([^\"]|\\\\\")\"");
     }
 
     public void find() {
