@@ -48,7 +48,7 @@ public class AllTest extends TestCase {
 
         Document d = null;
         try {
-            ParallelParser pp = new ParallelParser(data, 16);
+            ParallelParser pp = new ParallelParser(data, 4);
             d = pp.parse();
         } catch (Exception e1) {
             e1.printStackTrace();

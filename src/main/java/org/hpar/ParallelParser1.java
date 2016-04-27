@@ -4,8 +4,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.helper.DescendableLinkedList;
 import org.jsoup.nodes.*;
 
-import java.util.*;
-public class ParallelParser {
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+
+public class ParallelParser1 {
 
     int numThreads;
     String input;
@@ -13,7 +15,7 @@ public class ParallelParser {
     String[] inputs;
     DescendableLinkedList<Element> stack; // open emlement stack
 
-    public ParallelParser(String input, int numThreads) {
+    public ParallelParser1(String input, int numThreads) {
         this.input = input;
         this.numThreads = numThreads;
         inputs = partition(input);
@@ -22,9 +24,9 @@ public class ParallelParser {
     }
 
     public Document parse() {
+
         Thread[] pparsers = new ParserThread[numThreads];
 
-//        long sta = System.nanoTime();
         for (int i = 0; i < numThreads; i++) {
             pparsers[i] = new ParserThread(i + "", inputs[i]);
             pparsers[i].start();
@@ -36,30 +38,28 @@ public class ParallelParser {
                 e.printStackTrace();
             }
         }
-//        long mid = System.nanoTime();
         Document doc = postprocess(docs);
-//        long end = System.nanoTime();
-
-//        System.out.println("thread parsing time: " + (mid - sta)/1000000 + "ms");
-//        System.out.println("postprocessing time: " + (end - mid)/1000000 + "ms");
-
         return doc;
     }
 
     String[] partition(String input) {
+        MetaLexicon meta = new MetaLexicon(input, 0, input.length());
+        meta.find();
+        meta.match();
+
         String[] inputs = new String[numThreads];
         int length = input.length();
         int start = 0;
         int end = 0;
-        int step = length / numThreads;
+        int step = (int) ((0.8 * length) / numThreads);
         for (int i = 0; i < numThreads; i++) {
             start = end;
             end = start + step;
-            if (end >= length)
+            if (end >= length || i == numThreads-1)
                 end = length;
             else {
                 // find a good partition point i.e. after '>'
-                while (input.charAt(end) != '>') {
+                while (input.charAt(end) != '>' && !meta.isInRightPlace(end)) {
                     end++;
                 }
                 end++;
@@ -68,7 +68,7 @@ public class ParallelParser {
             // TODO: 减少字符串的复制损耗
             inputs[i] = input.substring(start, end);
 //            System.out.println(inputs[i].substring(0, 20));
-//            System.out.println("input[" + i + "]  from " + start + "~" + end);
+            System.out.println("input[" + i + "]  from " + start + "~" + end);
 //            System.out.println(inputs[i].substring(inputs[i].length()-20, inputs[i].length()));
         }
         for (int i = 1; i < numThreads; i++) {

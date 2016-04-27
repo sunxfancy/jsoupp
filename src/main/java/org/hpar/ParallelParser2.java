@@ -4,8 +4,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.helper.DescendableLinkedList;
 import org.jsoup.nodes.*;
 
-import java.util.*;
-public class ParallelParser {
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+
+public class ParallelParser2 {
 
     int numThreads;
     String input;
@@ -13,7 +15,7 @@ public class ParallelParser {
     String[] inputs;
     DescendableLinkedList<Element> stack; // open emlement stack
 
-    public ParallelParser(String input, int numThreads) {
+    public ParallelParser2(String input, int numThreads) {
         this.input = input;
         this.numThreads = numThreads;
         inputs = partition(input);

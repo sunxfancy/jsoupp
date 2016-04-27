@@ -1,7 +1,6 @@
 package org.hpar;
 
 import junit.framework.TestCase;
-import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
 
 import java.io.File;
@@ -11,7 +10,7 @@ public class MetaLexiconTest extends TestCase {
 
     public void testFind_tags() throws Exception {
         String data = App.readFile("src/test/extern/websites/北京航空航天大学图书馆 _ 北航图书馆 _ Library Of Beihang University _ BUAALIB.html");
-        MetaLexicon metaLexicon = new MetaLexicon(data, 0, data.length());
+        YetAnotherLexer metaLexicon = new YetAnotherLexer(data, 0, data.length());
         metaLexicon.find();
         metaLexicon.print();
     }
