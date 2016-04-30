@@ -33,19 +33,15 @@ public class YetAnotherLexer {
         Stack<tag> stack = new Stack<>();
         boolean ans = true;
         for (tag t: tags) {
-            switch (t.type) {
-                case 1:
-                case 3: { stack.push(t); break; }
-                case 2:
-                case 4: {
-                    if (stack.empty() || stack.peek().type != t.type - 1) {
-                        ans = false;
-                        continue;
-                    }
-                    tag s = stack.pop();
-                    s.match = t;
-                    t.match = s;
+            if ((t.type & 1) == 1) { stack.push(t); break; }
+            else {
+                if (stack.empty() || stack.peek().type != t.type - 1) {
+                    ans = false;
+                    continue;
                 }
+                tag s = stack.pop();
+                s.match = t;
+                t.match = s;
             }
         }
         return ans;
@@ -154,23 +150,25 @@ public class YetAnotherLexer {
     boolean findScript(int begin) {
         boolean ans = true;
         skipSpace();
-        if (!(pos < data_end && data[pos] == 's')) return false;
-        ++pos;
-        if (data[pos] == 'c') {
+        if (!(pos < data_end && data[pos] == 's')) ans = false;
+        else {
             ++pos;
-            for (char c: script) {
-                if (pos < data_end && data[pos] == c) ++pos;
-                else ans = false;
-            }
-        } else if (data[pos] == 't') {
-            ++pos;
-            for (char c: style) {
-                if (pos < data_end && data[pos] == c) ++pos;
-                else ans = false;
-            }
-        } else ans = false;
+            if (data[pos] == 'c') {
+                ++pos;
+                for (char c : script) {
+                    if (pos < data_end && data[pos] == c) ++pos;
+                    else ans = false;
+                }
+            } else if (data[pos] == 't') {
+                ++pos;
+                for (char c : style) {
+                    if (pos < data_end && data[pos] == c) ++pos;
+                    else ans = false;
+                }
+            } else ans = false;
+        }
         while (pos < data_end && data[pos] != '>') ++pos;
-        if (data[pos-1] == '/' || !ans) return false;
+        if (data[pos-1] == '/' || !ans) { ++pos; return false; }
         int end = ++pos;
         tags.add(new tag(begin, end, tag.script_begin));
         return true;
@@ -180,21 +178,23 @@ public class YetAnotherLexer {
     boolean findScriptClose(int begin) {
         boolean ans = true;
         skipSpace();
-        if (!(pos < data_end && data[pos] == 's')) return false;
-        ++pos;
-        if (data[pos] == 'c') {
+        if (!(pos < data_end && data[pos] == 's')) ans = false;
+        else {
             ++pos;
-            for (char c: script) {
-                if (pos < data_end && data[pos] == c) ++pos;
-                else ans = false;
-            }
-        } else if (data[pos] == 't') {
-            ++pos;
-            for (char c: style) {
-                if (pos < data_end && data[pos] == c) ++pos;
-                else ans = false;
-            }
-        } else ans = false;
+            if (data[pos] == 'c') {
+                ++pos;
+                for (char c : script) {
+                    if (pos < data_end && data[pos] == c) ++pos;
+                    else ans = false;
+                }
+            } else if (data[pos] == 't') {
+                ++pos;
+                for (char c : style) {
+                    if (pos < data_end && data[pos] == c) ++pos;
+                    else ans = false;
+                }
+            } else ans = false;
+        }
         skipSpace();
         if (pos < data_end && data[pos] == '>') {
             int end = ++pos;
@@ -202,6 +202,7 @@ public class YetAnotherLexer {
             return ans;
         }
         while (pos < data_end && data[pos] != '>') ++pos;
+        ++pos;
         return false;
     }
 
