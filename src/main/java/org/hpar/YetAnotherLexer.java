@@ -33,7 +33,8 @@ public class YetAnotherLexer {
         Stack<tag> stack = new Stack<>();
         boolean ans = true;
         for (tag t: tags) {
-            if ((t.type & 1) == 1) { stack.push(t); break; }
+            if (t.type == tag.self_end) continue;
+            if ((t.type & 1) != 0) { stack.push(t); }
             else {
                 if (stack.empty() || stack.peek().type != t.type - 1) {
                     ans = false;
@@ -86,8 +87,6 @@ public class YetAnotherLexer {
             System.out.println("Match: "+String.copyValueOf(data, t.pos, t.size));
             System.out.println("from: "+t.pos+" - "+(t.pos+t.size));
         }
-
-
     }
 
     public List<tag> find() {
@@ -115,9 +114,6 @@ public class YetAnotherLexer {
                     } else {
                         if (findScript(first))
                             tag_open = true;
-                        else
-                            tags.add(new tag(first, pos, tag.other_begin));
-//                            list[list_p++] = first;
                     }
                 } break;
                 case '-': {
@@ -168,8 +164,16 @@ public class YetAnotherLexer {
             } else ans = false;
         }
         while (pos < data_end && data[pos] != '>') ++pos;
-        if (data[pos-1] == '/' || !ans) { ++pos; return false; }
         int end = ++pos;
+
+        if (data[pos-1] == '/') {
+            tags.add(new tag(begin, end, tag.self_end));
+            return false;
+        }
+        if (ans == false) {
+            tags.add(new tag(begin, end, tag.other_begin));
+            return false;
+        }
         tags.add(new tag(begin, end, tag.script_begin));
         return true;
     }

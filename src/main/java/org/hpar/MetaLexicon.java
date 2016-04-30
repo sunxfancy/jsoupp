@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 
 
 
-
 public class MetaLexicon {
     char[] data;
     int pos;
@@ -139,8 +138,6 @@ public class MetaLexicon {
     static char[] script = "ript".toCharArray();
     static char[] style = "yle".toCharArray();
 
-
-
     boolean findScript(int begin) {
         skipSpace();
         if (!(pos < data_end && data[pos] == 's')) return false;
@@ -164,7 +161,6 @@ public class MetaLexicon {
         tags.add(new tag(begin, end, tag.script_begin));
         return true;
     }
-
 
     boolean findScriptClose(int begin) {
         skipSpace();
@@ -191,30 +187,9 @@ public class MetaLexicon {
         }
         return false;
     }
-
 }
 
 
-
-class tag {
-    int pos;
-    int size;
-    int type;
-    tag match;
-
-    public tag(int begin, int end, int type) {
-        this.pos = begin;
-        this.size = end - begin;
-        this.type = type;
-    }
-
-    public static final int script_begin = 1;
-    public static final int script_end = 2;
-    public static final int comment_begin = 3;
-    public static final int comment_end = 4;
-    public static final int other_begin = 5;
-    public static final int other_end = 6;
-}
 
 /**
  *
@@ -253,6 +228,4 @@ class Lex {
         }
         return tags;
     }
-
-
 }
